@@ -1,5 +1,8 @@
 # RegexFinder
 
+
+<img src="https://user-images.githubusercontent.com/108073687/221195981-8381352d-1465-4753-884b-0a522fe52fbf.jpg" width="450">
+
 ## This is a 3-day zero-dependency project that finds regular expression for any piece of text
 
 ### How to install:
@@ -43,4 +46,7 @@ This module contains some parameters that you have to understand before using pr
   <img src="https://user-images.githubusercontent.com/108073687/221011998-fbfc5977-6ac1-4a73-bee3-2ea3410b749c.jpg" width="850" height="200">
 
   <img src="https://user-images.githubusercontent.com/108073687/221012005-1a4aa582-3297-4d65-8445-e67ab27b776f.jpg" width="600" height="200">
+  
+  
+### For any idea or problem comment on this repo.
 
