@@ -1,49 +1,49 @@
 
 class RegexFinder:
     def __init__(self, targetText, document='', descriptive=True, constantChars=None, constantPrecedingText=False, constantSucceedingText=False):
-        self.doc = document
-        self.str = targetText
-        self.descriptive = descriptive
-        self.constantChars = constantChars
-        self.constantPrecedingText = constantPrecedingText
-        self.constantSucceedingText = constantSucceedingText
+        self.__doc = document
+        self.__str = targetText
+        self.__descriptive = descriptive
+        self.__constantChars = constantChars
+        self.__constantPrecedingText = constantPrecedingText
+        self.__constantSucceedingText = constantSucceedingText
 
     def find(self):
-        target = self.analyze(self.str)
-        if self.doc:
-            wholeText = self.analyze(self.doc)
-            if self.checkPattern(target, wholeText):
-                print('UNIQUE REGEX PATTERN: ', self.regex())
+        target = self.__analyze(self.__str)
+        if self.__doc:
+            wholeText = self.__analyze(self.__doc)
+            if self.__checkPattern(target, wholeText):
+                print('UNIQUE REGEX PATTERN: ', self.__regex())
             else:
-                if self.constantPrecedingText:
-                    lengthBeforeTarget = len(self.doc[:self.doc.find(self.str) - 1])
-                    print('UNIQUE REGEX PATTERN:', self.regex(preceding=self.beforeTarget(lengthBeforeTarget)))
-                elif self.constantSucceedingText:
+                if self.__constantPrecedingText:
+                    lengthBeforeTarget = len(self.__doc[:self.__doc.find(self.__str) - 1])
+                    print('UNIQUE REGEX PATTERN:', self.__regex(preceding=self.__beforeTarget(lengthBeforeTarget)))
+                elif self.__constantSucceedingText:
                     lengthAfterTarget = len(
-                        self.doc[:len(self.doc) - (self.doc.find(self.str) + len(self.str) - 1) - 1])
-                    print('UNIQUE REGEX PATTERN:', self.regex(succeeding=self.afterTarget(lengthAfterTarget)))
+                        self.__doc[:len(self.__doc) - (self.__doc.find(self.__str) + len(self.__str) - 1) - 1])
+                    print('UNIQUE REGEX PATTERN:', self.__regex(succeeding=self.__afterTarget(lengthAfterTarget)))
                 else:
-                    regex = self.regex()
-                    if self.constantChars:
+                    regex = self.__regex()
+                    if self.__constantChars:
                         print('UNIQUE REGEX PATTERN:', regex)
                     else:
                         print('GENERAL REGEX PATTERN: ', regex)
         else:
-            print('GENERAL REGEX PATTERN:', self.regex())
+            print('GENERAL REGEX PATTERN:', self.__regex())
 
-    def regex(self, preceding='', succeeding=''):
-        arch = self.rawRegexOverview()
+    def __regex(self, preceding='', succeeding=''):
+        arch = self.__rawRegexOverview()
         regex = ''
         keys = {'a': 'a-zA-Z', 'd': '\d', 'n': '\s', 's': '\W'}
 
-        if not self.descriptive:
+        if not self.__descriptive:
             itemsBetweenConst = []
-            if self.constantChars:
-                for x in range(len(self.constantChars)):
+            if self.__constantChars:
+                for x in range(len(self.__constantChars)):
                     if x != 0:
-                        itemsBetweenConst.append(arch[arch.index(self.constantChars[x-1]) + 1:arch.index(self.constantChars[x])])
+                        itemsBetweenConst.append(arch[arch.index(self.__constantChars[x - 1]) + 1:arch.index(self.__constantChars[x])])
                     else:
-                        itemsBetweenConst.append(arch[:arch.index(self.constantChars[x])])
+                        itemsBetweenConst.append(arch[:arch.index(self.__constantChars[x])])
                 new = [[] for _ in itemsBetweenConst]
                 index = 0
                 for rem in itemsBetweenConst:
@@ -59,12 +59,12 @@ class RegexFinder:
                                 new[index].append(em)
                     index += 1
 
-                for x in range(len(self.constantChars)):
+                for x in range(len(self.__constantChars)):
                     if new[x]:
                         if x != 0:
-                            arch[arch.index(self.constantChars[x-1]) + 1:arch.index(self.constantChars[x])] = [new[x]]
+                            arch[arch.index(self.__constantChars[x - 1]) + 1:arch.index(self.__constantChars[x])] = [new[x]]
                         else:
-                            arch[:arch.index(self.constantChars[x])] = [new[x]]
+                            arch[:arch.index(self.__constantChars[x])] = [new[x]]
 
         brackets = False
         for part in arch:
@@ -79,12 +79,12 @@ class RegexFinder:
             if type(part) == list:
                 if not any(type(part[y]) == list for y in range(len(part))):
                     if part[1] == 1:
-                        if self.descriptive:
+                        if self.__descriptive:
                             regex += f'{keys[part[0][2:3]]}'
                         else:
                             regex += f'{keys[part[0][2:3]]}*'
                     else:
-                        if self.descriptive:
+                        if self.__descriptive:
                             if brackets:
                                 regex += f'{keys[part[0][2:3]]}]{{{part[1]}}}'
                             else:
@@ -103,11 +103,11 @@ class RegexFinder:
                             optional += keys[element[2:3]]
                     regex += optional + ']*?'
             else:
-                if self.constantChars:
-                    if part in self.constantChars:
+                if self.__constantChars:
+                    if part in self.__constantChars:
                         regex += part[0]
                     else:
-                        if self.descriptive:
+                        if self.__descriptive:
                             regex += keys[part[2:3]]
                         else:
                             if brackets:
@@ -115,7 +115,7 @@ class RegexFinder:
                             else:
                                 regex += f'{keys[part[2:3]]}*'
                 else:
-                    if self.descriptive:
+                    if self.__descriptive:
                         regex += keys[part[2:3]]
                     else:
                         if brackets:
@@ -131,14 +131,14 @@ class RegexFinder:
 
         return regex
 
-    def rawRegexOverview(self):
-        target = self.analyze(self.str)
-        streakList = self.findStreak(target)
-        groupedStreaks = self.groupByStreak(streakList)
+    def __rawRegexOverview(self):
+        target = self.__analyze(self.__str)
+        streakList = self.__findStreak(target)
+        groupedStreaks = self.__groupByStreak(streakList)
         try:
-            if self.constantChars:
-                self.constantChars = [target[x] for x in self.constantChars]
-                for const in self.constantChars:
+            if self.__constantChars:
+                self.__constantChars = [target[x] for x in self.__constantChars]
+                for const in self.__constantChars:
                     if const in streakList:
                         streakList.remove(const)
         except IndexError:
@@ -146,13 +146,13 @@ class RegexFinder:
 
         overviewGroups = []
         for group in groupedStreaks:
-            for item in self.separateGroupsByOrder(group):
+            for item in self.__separateGroupsByOrder(group):
                 overviewGroups.append(item)
 
         finalGroups = overviewGroups
-        if self.constantChars:
-            for _ in range(len(self.constantChars)):
-                finalGroups = self.separateGroupsByConst(finalGroups, self.constantChars)
+        if self.__constantChars:
+            for _ in range(len(self.__constantChars)):
+                finalGroups = self.__separateGroupsByConst(finalGroups, self.__constantChars)
 
         index = 0
         raw_reg = []
@@ -173,7 +173,7 @@ class RegexFinder:
         return raw_reg
 
     @staticmethod
-    def analyze(text):
+    def __analyze(text):
         alphas = [f'{x}:a:{i}' for i, x in enumerate(text) if x.isalpha()]
         digits = [f'{x}:d:{i}' for i, x in enumerate(text) if x.isdigit()]
         spaces = [f'{x}:n:{i}' for i, x in enumerate(text) if x.isspace()]
@@ -184,7 +184,7 @@ class RegexFinder:
         return charTypes
 
     @staticmethod
-    def findStreak(target):
+    def __findStreak(target):
         streakList = []
         for x in range(len(target)):
             current = target[x][2:3]
@@ -198,7 +198,7 @@ class RegexFinder:
         return streakList
 
     @staticmethod
-    def separateGroupsByOrder(lst):
+    def __separateGroupsByOrder(lst):
         grouped = []
         result = []
         for i in range(len(lst)):
@@ -210,7 +210,7 @@ class RegexFinder:
                 result = []
         return grouped
 
-    def separateGroupsByConst(self, overviewGroups, constants):
+    def __separateGroupsByConst(self, overviewGroups, constants):
         for i in range(len(overviewGroups)):
             for c in constants:
                 if c in overviewGroups[i]:
@@ -218,11 +218,11 @@ class RegexFinder:
                     overviewGroups[i].pop(index)
                     overviewGroups[i] = [overviewGroups[i][:index], overviewGroups[i][index:]]
 
-        finalGroups = self.listFlatter(overviewGroups)
+        finalGroups = self.__listFlatter(overviewGroups)
         return finalGroups
 
     @staticmethod
-    def listFlatter(overviewGroups):
+    def __listFlatter(overviewGroups):
         finalGroups = []
         for group in overviewGroups:
             switch = False
@@ -237,7 +237,7 @@ class RegexFinder:
         return finalGroups
 
     @staticmethod
-    def groupByStreak(lst):
+    def __groupByStreak(lst):
         grouped = []
         result = []
         for i in range(len(lst)):
@@ -249,25 +249,25 @@ class RegexFinder:
                 result = []
         return grouped
 
-    def beforeTarget(self, lengthBeforeTarget):
+    def __beforeTarget(self, lengthBeforeTarget):
         addChar = ''
         for x in range(lengthBeforeTarget + 1):
-            if self.countSubstrings(self.doc, self.doc[lengthBeforeTarget - x] + addChar) == 1:
-                return self.doc[lengthBeforeTarget - x] + addChar
+            if self.__countSubstrings(self.__doc, self.__doc[lengthBeforeTarget - x] + addChar) == 1:
+                return self.__doc[lengthBeforeTarget - x] + addChar
             else:
-                addChar = self.doc[lengthBeforeTarget - x] + addChar
+                addChar = self.__doc[lengthBeforeTarget - x] + addChar
 
-    def afterTarget(self, lengthAfterTarget):
+    def __afterTarget(self, lengthAfterTarget):
         addChar = ''
-        charIndex = len(self.doc) - lengthAfterTarget
+        charIndex = len(self.__doc) - lengthAfterTarget
         for x in range(lengthAfterTarget):
-            if self.countSubstrings(self.doc, addChar + self.doc[charIndex + x]) == 1:
-                return addChar + self.doc[charIndex + x]
+            if self.__countSubstrings(self.__doc, addChar + self.__doc[charIndex + x]) == 1:
+                return addChar + self.__doc[charIndex + x]
             else:
-                addChar += self.doc[charIndex + x]
+                addChar += self.__doc[charIndex + x]
 
     @staticmethod
-    def checkPattern(target, whole_text):
+    def __checkPattern(target, whole_text):
         checkPattern = []
         target = [x[2:3] for x in target]
         whole_text = [x[2:3] for x in whole_text]
@@ -281,7 +281,7 @@ class RegexFinder:
             return False
 
     @staticmethod
-    def countSubstrings(string, substring):
+    def __countSubstrings(string, substring):
         stringSize = len(string)
         substringSize = len(substring)
         count = 0
@@ -292,12 +292,12 @@ class RegexFinder:
 
     def help(self):
         print('Character indexes:')
-        for char in self.str:
+        for char in self.__str:
             print(char, end='  ')
         print('')
-        for _ in self.str:
+        for _ in self.__str:
             print('|  ', end='')
         print('')
-        for index in range(len(self.str)):
+        for index in range(len(self.__str)):
             print(index, end='  ')
         print('')
