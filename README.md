@@ -11,14 +11,18 @@
 
 
 ### How to import:
-      
 
-    from regexfinder import RegexFinder
-
+```python
+from regexfinder import RegexFinder
+```
   
 ### How to use:
 
 #### Call **RegexFinder**, type inside the string you want to be regular expressed, and **find()** !
+
+```python
+RegexFinder(text).find()
+```
 
 This module contains some parameters that you have to understand before using properly:
 
@@ -31,7 +35,13 @@ This module contains some parameters that you have to understand before using pr
 
     - **constantSucceedingText** - turn this to True if you have inserted a document, to create a regexp that is based on the text **after** the pattern you want to find, that never changes.
 
-- **constantChars** - To be able to find general regexp for a pattern of a string, you should declare one or more characters which will always appear in string, as constants. For example, if you want to find regexp of this string 'test="123"', which represents a key and a value, you should add as constantChar the '=', and both the ' " ', so the program can grasp from atleast somewhere what's going on and what the objective of the user is. This parameter takes as input list which contains indexes of characters that you want to be declared constant. Index of character starts from 0, as the first char of string, and goes on for the length of it. If you have trouble finding this indexes, call the **help()** function of this class and it will display the indexes for you. For the above example the input would look like this: **_constantChars=[4, 5, 9]_**. 
+- **constantChars** - To be able to find general regexp for a pattern of a string, you should declare one or more characters which will always appear in string, as constants. For example, if you want to find regexp of this string `'test="123"'`, which represents a key and a value, you should add as constantChar the `=`, and both the `"`, so the program can grasp from atleast somewhere what's going on and what the objective of the user is. This parameter takes as input list which contains indexes of characters that you want to be declared constant. Index of character starts from 0, as the first char of string, and goes on for the length of it. If you have trouble finding this indexes, call the ```help()``` function of this class and it will display the indexes for you. For the above example the input would look like this: `constantChars=[4, 5, 9]`. 
+
+```python
+RegexFinder('riflosnake', descriptive=False, document='best programmer of the year: riflosnake', constantPrecedingText='year: ').find()
+
+> UNIQUE REGEX PATTERN: (?<=: )[a-zA-Z]*
+```
 
 ### Reason for these parameters is that finding and generating Regular Expressions programmatically without A.I is almost impossible, because the code can't deduct the purpose of the regex itself, it doesn't have logic, so the only solution is if you and the program work together, you throw the hints, RegexFinder does the heavy duty.
 
